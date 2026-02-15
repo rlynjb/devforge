@@ -11,6 +11,14 @@ import {
   Plus,
   Settings,
   Lock,
+  GitPullRequest,
+  Shield,
+  Workflow,
+  Search,
+  FlaskConical,
+  ListChecks,
+  Activity,
+  Palette,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -20,6 +28,17 @@ const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: 'repo', label: 'Repository', icon: GitBranch },
   { id: 'docs', label: 'Documentation', icon: FileText },
   { id: 'deploy', label: 'Deploy', icon: Rocket },
+];
+
+const PHASE2_FEATURES: { label: string; icon: React.ElementType }[] = [
+  { label: 'Issue Tracking', icon: ListChecks },
+  { label: 'Test Generation', icon: FlaskConical },
+  { label: 'Code Review', icon: Shield },
+  { label: 'PR Generation', icon: GitPullRequest },
+  { label: 'CI/CD Pipeline', icon: Workflow },
+  { label: 'Monitoring', icon: Activity },
+  { label: 'Codebase RAG', icon: Search },
+  { label: 'UI Prototyping', icon: Palette },
 ];
 
 const STATUS_COLORS: Record<StepStatus, string> = {
@@ -54,46 +73,78 @@ export function Sidebar({ onNewProject, onOpenSettings }: SidebarProps) {
         <h1 className="text-lg font-bold">DevForge</h1>
       </div>
 
-      {/* Steps */}
-      <nav className="flex-1 px-2 py-4">
-        {STEPS.map((step) => {
-          const status = project?.steps[step.id]?.status ?? 'locked';
-          const isCurrent = project?.currentStep === step.id;
-          const Icon = step.icon;
-          const isLocked = status === 'locked';
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Phase 1 Steps */}
+        <div className="px-2 py-4">
+          <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted/60">
+            Phase 1
+          </p>
+          <nav>
+            {STEPS.map((step) => {
+              const status = project?.steps[step.id]?.status ?? 'locked';
+              const isCurrent = project?.currentStep === step.id;
+              const Icon = step.icon;
+              const isLocked = status === 'locked';
 
-          return (
-            <div
-              key={step.id}
-              className={clsx(
-                'mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
-                isCurrent && 'bg-accent/15 font-medium',
-                !isCurrent && !isLocked && 'hover:bg-surface-hover cursor-pointer',
-                isLocked && 'opacity-50 cursor-not-allowed',
-                STATUS_COLORS[status]
-              )}
-            >
-              {isLocked ? (
-                <Lock className="h-4 w-4 shrink-0" />
-              ) : (
-                <Icon className="h-4 w-4 shrink-0" />
-              )}
-              <span className="text-foreground">{step.label}</span>
-              {status !== 'locked' && (
-                <span
+              return (
+                <div
+                  key={step.id}
                   className={clsx(
-                    'ml-auto rounded-full px-2 py-0.5 text-xs',
-                    STATUS_BG[status],
+                    'mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
+                    isCurrent && 'bg-accent/15 font-medium',
+                    !isCurrent && !isLocked && 'hover:bg-surface-hover cursor-pointer',
+                    isLocked && 'opacity-50 cursor-not-allowed',
                     STATUS_COLORS[status]
                   )}
                 >
-                  {status}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </nav>
+                  {isLocked ? (
+                    <Lock className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <Icon className="h-4 w-4 shrink-0" />
+                  )}
+                  <span className="text-foreground">{step.label}</span>
+                  {status !== 'locked' && (
+                    <span
+                      className={clsx(
+                        'ml-auto rounded-full px-2 py-0.5 text-xs',
+                        STATUS_BG[status],
+                        STATUS_COLORS[status]
+                      )}
+                    >
+                      {status}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Phase 2 - Coming Soon */}
+        <div className="px-2 pb-4">
+          <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted/60">
+            Phase 2 — Coming Soon
+          </p>
+          <nav>
+            {PHASE2_FEATURES.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.label}
+                  className="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm opacity-35 cursor-not-allowed"
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-muted" />
+                  <span className="text-muted">{feature.label}</span>
+                  <span className="ml-auto rounded-full bg-muted/10 px-1.5 py-0.5 text-[9px] font-medium text-muted/70">
+                    soon
+                  </span>
+                </div>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
 
       {/* Bottom actions */}
       <div className="border-t border-border p-2">
