@@ -23,6 +23,10 @@ export default async (req: Request, _context: Context) => {
     return Response.json(result);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Repo creation failed';
-    return Response.json({ error: message }, { status: 500 });
+    const details = error && typeof error === 'object' && 'response' in error
+      ? (error as { response?: { data?: unknown } }).response?.data
+      : undefined;
+    console.error('github-create error:', message, details);
+    return Response.json({ error: message, details }, { status: 500 });
   }
 };

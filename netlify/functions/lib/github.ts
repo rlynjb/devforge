@@ -1,12 +1,12 @@
-import { Octokit } from '@octokit/rest';
 import type { RepoConfig, RepoResult } from '../../../shared/types';
 
-function getOctokit() {
+async function getOctokit() {
+  const { Octokit } = await import('@octokit/rest');
   return new Octokit({ auth: process.env.GITHUB_TOKEN });
 }
 
 export async function createRepo(config: RepoConfig): Promise<RepoResult> {
-  const octokit = getOctokit();
+  const octokit = await getOctokit();
 
   const { data } = await octokit.repos.createForAuthenticatedUser({
     name: config.name,
@@ -28,7 +28,7 @@ export async function commitFiles(
   files: { path: string; content: string }[],
   message: string
 ): Promise<void> {
-  const octokit = getOctokit();
+  const octokit = await getOctokit();
   const [owner, repo] = repoFullName.split('/');
 
   // Get the default branch's latest commit SHA
@@ -92,7 +92,7 @@ export async function commitFiles(
 }
 
 export async function getAuthenticatedUser(): Promise<string> {
-  const octokit = getOctokit();
+  const octokit = await getOctokit();
   const { data } = await octokit.users.getAuthenticated();
   return data.login;
 }
