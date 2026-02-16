@@ -1,7 +1,7 @@
 import { RunnableSequence } from '@langchain/core/runnables';
 import { getModel } from './providers';
-import { plannerPrompt, docsPrompt, deployPrompt } from './prompts';
-import { projectPlanSchema, generatedDocsSchema, deployConfigSchema } from './schemas';
+import { plannerPrompt, docsPrompt, scaffoldPrompt, deployPrompt } from './prompts';
+import { projectPlanSchema, generatedDocsSchema, scaffoldSchema, deployConfigSchema } from './schemas';
 import type { AppSettings, IdeaInput, ProjectPlan } from '../../../../shared/types';
 
 export function createPlannerChain(settings: AppSettings) {
@@ -33,6 +33,23 @@ export function createDocsChain(settings: AppSettings) {
         input.plan.techStack.map((t) => `${t.category}: ${t.choice}`).join('\n'),
     },
     docsPrompt,
+    structuredModel,
+  ]);
+}
+
+export function createScaffoldChain(settings: AppSettings) {
+  const model = getModel(settings);
+  const structuredModel = model.withStructuredOutput(scaffoldSchema);
+
+  return RunnableSequence.from([
+    {
+      summary: (input: { plan: ProjectPlan }) => input.plan.summary,
+      features: (input: { plan: ProjectPlan }) =>
+        input.plan.mvpFeatures.map((f) => `- ${f.name}: ${f.description}`).join('\n'),
+      techStack: (input: { plan: ProjectPlan }) =>
+        input.plan.techStack.map((t) => `${t.category}: ${t.choice}`).join('\n'),
+    },
+    scaffoldPrompt,
     structuredModel,
   ]);
 }

@@ -6,6 +6,7 @@ import type {
   RepoConfig,
   RepoResult,
   GeneratedDocs,
+  GeneratedScaffold,
   DeployConfig,
 } from '../../shared/types';
 
@@ -58,6 +59,8 @@ export const api = {
     post<ProjectPlan>(`${BASE}/ai-plan`, { idea, settings }),
   generateDocs: (plan: ProjectPlan, repoName: string, settings: AppSettings) =>
     post<GeneratedDocs>(`${BASE}/ai-docs`, { plan, repoName, settings }),
+  generateScaffold: (plan: ProjectPlan, settings: AppSettings) =>
+    post<GeneratedScaffold>(`${BASE}/ai-scaffold`, { plan, settings }),
   generateDeployConfig: (
     techStack: string,
     projectType: string,
@@ -72,12 +75,19 @@ export const api = {
     post<{ ok: boolean }>(`${BASE}/github-commit`, { repoFullName, files, message }),
 
   // Netlify
-  linkNetlify: (repoFullName: string, siteName: string, buildCommand: string, publishDir: string) =>
+  linkNetlify: (
+    repoFullName: string,
+    siteName: string,
+    buildCommand: string,
+    publishDir: string,
+    files?: { path: string; content: string }[]
+  ) =>
     post<{ siteId: string; siteUrl: string; adminUrl: string }>(`${BASE}/netlify-link`, {
       repoFullName,
       siteName,
       buildCommand,
       publishDir,
+      files,
     }),
 
   // Settings

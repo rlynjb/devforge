@@ -40,6 +40,7 @@ export function Dashboard() {
         repo: null,
         repoResult: null,
         docs: null,
+        scaffold: null,
         deploy: null,
         settings: { aiProvider: 'openai' as const, model: 'gpt-4o' },
       };

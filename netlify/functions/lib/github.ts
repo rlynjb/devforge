@@ -96,3 +96,20 @@ export async function getAuthenticatedUser(): Promise<string> {
   const { data } = await octokit.users.getAuthenticated();
   return data.login;
 }
+
+export async function addDeployKey(
+  repoFullName: string,
+  title: string,
+  key: string
+): Promise<number> {
+  const octokit = await getOctokit();
+  const [owner, repo] = repoFullName.split('/');
+  const { data } = await octokit.repos.createDeployKey({
+    owner,
+    repo,
+    title,
+    key,
+    read_only: true,
+  });
+  return data.id;
+}

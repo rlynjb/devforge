@@ -46,6 +46,12 @@ export interface GeneratedDocs {
   featureList: string;
 }
 
+export interface GeneratedScaffold {
+  files: { path: string; content: string }[];
+  buildCommand: string;
+  publishDir: string;
+}
+
 export interface DeployConfig {
   netlifyToml: string;
   envVars: { key: string; description: string; required: boolean }[];
@@ -69,6 +75,7 @@ export interface ProjectState {
   repo: RepoConfig | null;
   repoResult: RepoResult | null;
   docs: GeneratedDocs | null;
+  scaffold: GeneratedScaffold | null;
   deploy: DeployConfig | null;
   settings: AppSettings;
 }

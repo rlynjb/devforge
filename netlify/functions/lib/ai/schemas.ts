@@ -30,6 +30,19 @@ export const generatedDocsSchema = z.object({
   featureList: z.string().describe('Feature list as markdown'),
 });
 
+export const scaffoldSchema = z.object({
+  files: z
+    .array(
+      z.object({
+        path: z.string().describe('File path relative to repo root, e.g. "src/App.jsx" or "index.html"'),
+        content: z.string().describe('Full file content'),
+      })
+    )
+    .describe('All source files for the app scaffold (3-8 files). Must include package.json and an entry point.'),
+  buildCommand: z.string().describe('The build command, e.g. "npm run build"'),
+  publishDir: z.string().describe('The build output directory served by Netlify, e.g. "dist" or "build"'),
+});
+
 export const deployConfigSchema = z.object({
   netlifyToml: z.string().describe('Contents of netlify.toml'),
   envVars: z.array(

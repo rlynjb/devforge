@@ -29,6 +29,7 @@ export function createInitialState(): ProjectState {
     repo: null,
     repoResult: null,
     docs: null,
+    scaffold: null,
     deploy: null,
     settings: { aiProvider: 'openai', model: 'gpt-4o' },
   };
