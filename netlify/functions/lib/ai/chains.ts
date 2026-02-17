@@ -1,7 +1,7 @@
 import { RunnableSequence } from '@langchain/core/runnables';
 import { getModel } from './providers';
-import { plannerPrompt, docsPrompt, scaffoldPrompt, deployPrompt } from './prompts';
-import { projectPlanSchema, generatedDocsSchema, scaffoldSchema, deployConfigSchema } from './schemas';
+import { plannerPrompt, docsPrompt, scaffoldPrompt, policyPrompt, deployPrompt } from './prompts';
+import { projectPlanSchema, generatedDocsSchema, scaffoldSchema, promptPolicySchema, deployConfigSchema } from './schemas';
 import type { AppSettings, IdeaInput, ProjectPlan } from '../../../../shared/types';
 
 export function createPlannerChain(settings: AppSettings) {
@@ -50,6 +50,27 @@ export function createScaffoldChain(settings: AppSettings) {
         input.plan.techStack.map((t) => `${t.category}: ${t.choice}`).join('\n'),
     },
     scaffoldPrompt,
+    structuredModel,
+  ]);
+}
+
+export function createPolicyChain(settings: AppSettings) {
+  const model = getModel(settings);
+  const structuredModel = model.withStructuredOutput(promptPolicySchema);
+
+  return RunnableSequence.from([
+    {
+      summary: (input: { plan: ProjectPlan; existingRules: string }) => input.plan.summary,
+      techStack: (input: { plan: ProjectPlan; existingRules: string }) =>
+        input.plan.techStack.map((t) => `${t.category}: ${t.choice}`).join('\n'),
+      features: (input: { plan: ProjectPlan; existingRules: string }) =>
+        input.plan.mvpFeatures.map((f) => `- ${f.name}: ${f.description}`).join('\n'),
+      goals: (input: { plan: ProjectPlan; existingRules: string }) =>
+        input.plan.goals.join('\n'),
+      existingRules: (input: { plan: ProjectPlan; existingRules: string }) =>
+        input.existingRules || 'none',
+    },
+    policyPrompt,
     structuredModel,
   ]);
 }

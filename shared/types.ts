@@ -52,6 +52,24 @@ export interface GeneratedScaffold {
   publishDir: string;
 }
 
+export interface PromptPolicy {
+  projectOverview: string;
+  techConventions: string;
+  codeStyleRules: string[];
+  architectureRules: string[];
+  dos: string[];
+  donts: string[];
+  testingGuidelines: string;
+  dependenciesPolicy: string;
+}
+
+export interface RulePreset {
+  id: string;
+  name: string;
+  rules: Partial<PromptPolicy>;
+  createdAt: string;
+}
+
 export interface DeployConfig {
   netlifyToml: string;
   envVars: { key: string; description: string; required: boolean }[];
@@ -59,9 +77,20 @@ export interface DeployConfig {
   siteUrl?: string;
 }
 
+export type RepoSource =
+  | { type: 'local'; path: string }
+  | { type: 'github'; repo: string };
+
+export interface RepoScanResult {
+  files: string[];
+  detected: Record<string, boolean>;
+}
+
 export interface AppSettings {
   aiProvider: 'openai' | 'anthropic';
   model: string;
+  rulePresets?: RulePreset[];
+  repoSource?: RepoSource;
 }
 
 export interface ProjectState {
@@ -76,6 +105,7 @@ export interface ProjectState {
   repoResult: RepoResult | null;
   docs: GeneratedDocs | null;
   scaffold: GeneratedScaffold | null;
+  policy: PromptPolicy | null;
   deploy: DeployConfig | null;
   settings: AppSettings;
 }

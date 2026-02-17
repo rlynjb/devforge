@@ -67,6 +67,37 @@ Tech Stack:
   ],
 ]);
 
+export const policyPrompt = ChatPromptTemplate.fromMessages([
+  [
+    'system',
+    `You are a senior software architect creating an AI rules file for AI coding assistants (Claude Code, Cursor, Copilot, etc.) working on a specific project.
+This file tells AI assistants how to write code for this project. Be extremely specific and opinionated.
+Rules:
+- Every rule must be concrete and actionable (e.g. "Use React.FC for component types" not "Follow best practices").
+- Derive rules directly from the tech stack, not generic advice.
+- Include specific version numbers and library names from the plan.
+- The dos and donts should be complementary — don't repeat the same thing in both.
+- Keep each individual rule to one sentence.
+- If pre-existing rules are provided, build upon them — don't contradict them, but add project-specific detail.`,
+  ],
+  [
+    'human',
+    `Project Summary: {summary}
+
+Tech Stack:
+{techStack}
+
+MVP Features:
+{features}
+
+Project Goals:
+{goals}
+
+Pre-existing rules to build upon:
+{existingRules}`,
+  ],
+]);
+
 export const deployPrompt = ChatPromptTemplate.fromMessages([
   [
     'system',

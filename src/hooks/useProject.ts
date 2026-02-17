@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { ProjectState, LogEntry, StepId, ProjectPlan, GeneratedDocs, GeneratedScaffold } from '../../shared/types';
+import type { ProjectState, LogEntry, StepId, ProjectPlan, GeneratedDocs, GeneratedScaffold, PromptPolicy } from '../../shared/types';
 
 interface ProjectStore {
   project: ProjectState | null;
@@ -9,6 +9,7 @@ interface ProjectStore {
   updatePlan: (plan: ProjectPlan) => void;
   updateDocs: (docs: GeneratedDocs) => void;
   updateScaffold: (scaffold: GeneratedScaffold) => void;
+  updatePolicy: (policy: PromptPolicy) => void;
   clearLogs: () => void;
 }
 
@@ -43,6 +44,11 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   updateScaffold: (scaffold) =>
     set((s) => ({
       project: s.project ? { ...s.project, scaffold, updatedAt: new Date().toISOString() } : null,
+    })),
+
+  updatePolicy: (policy) =>
+    set((s) => ({
+      project: s.project ? { ...s.project, policy, updatedAt: new Date().toISOString() } : null,
     })),
 
   clearLogs: () => set({ logs: [] }),

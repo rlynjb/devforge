@@ -7,12 +7,15 @@ import { Sidebar } from './Sidebar';
 import { StepCanvas } from './StepCanvas';
 import { LogPanel } from './LogPanel';
 import { SettingsModal } from './SettingsModal';
+import { RepoViewer } from './RepoViewer';
 import { ScrollText } from 'lucide-react';
+import type { RepoSource } from '../../shared/types';
 
 export function Dashboard() {
   const { project, setProject, addLog, clearLogs } = useProjectStore();
   const [showLogs, setShowLogs] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [viewingFile, setViewingFile] = useState<{ source: RepoSource; path: string; content?: string } | null>(null);
 
   const handleNewProject = useCallback(async () => {
     try {
@@ -41,6 +44,7 @@ export function Dashboard() {
         repoResult: null,
         docs: null,
         scaffold: null,
+        policy: null,
         deploy: null,
         settings: { aiProvider: 'openai' as const, model: 'gpt-4o' },
       };
@@ -52,7 +56,11 @@ export function Dashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar onNewProject={handleNewProject} onOpenSettings={() => setShowSettings(true)} />
+      <Sidebar
+        onNewProject={handleNewProject}
+        onOpenSettings={() => setShowSettings(true)}
+        onViewFile={(source, path, content) => setViewingFile({ source, path, content })}
+      />
 
       {project ? (
         <StepCanvas />
@@ -86,6 +94,14 @@ export function Dashboard() {
 
       <LogPanel isOpen={showLogs} onClose={() => setShowLogs(false)} />
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      {viewingFile && (
+        <RepoViewer
+          source={viewingFile.source}
+          filePath={viewingFile.path}
+          onClose={() => setViewingFile(null)}
+          initialContent={viewingFile.content}
+        />
+      )}
     </div>
   );
 }

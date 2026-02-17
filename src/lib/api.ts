@@ -7,7 +7,10 @@ import type {
   RepoResult,
   GeneratedDocs,
   GeneratedScaffold,
+  PromptPolicy,
   DeployConfig,
+  RepoSource,
+  RepoScanResult,
 } from '../../shared/types';
 
 const BASE = '/.netlify/functions';
@@ -61,6 +64,8 @@ export const api = {
     post<GeneratedDocs>(`${BASE}/ai-docs`, { plan, repoName, settings }),
   generateScaffold: (plan: ProjectPlan, settings: AppSettings) =>
     post<GeneratedScaffold>(`${BASE}/ai-scaffold`, { plan, settings }),
+  generatePolicy: (plan: ProjectPlan, settings: AppSettings, existingRules?: string) =>
+    post<PromptPolicy>(`${BASE}/ai-policy`, { plan, settings, existingRules }),
   generateDeployConfig: (
     techStack: string,
     projectType: string,
@@ -89,6 +94,20 @@ export const api = {
       publishDir,
       files,
     }),
+
+  // Repo Scan
+  scanRepo: (source: RepoSource) => {
+    const params = source.type === 'github'
+      ? `source=github&repo=${encodeURIComponent(source.repo)}`
+      : `source=local&repoPath=${encodeURIComponent(source.path)}`;
+    return get<RepoScanResult>(`${BASE}/repo-scan?${params}`);
+  },
+  readRepoFile: (source: RepoSource, filePath: string) => {
+    const params = source.type === 'github'
+      ? `source=github&repo=${encodeURIComponent(source.repo)}&file=${encodeURIComponent(filePath)}`
+      : `source=local&repoPath=${encodeURIComponent(source.path)}&file=${encodeURIComponent(filePath)}`;
+    return get<{ content: string }>(`${BASE}/repo-scan?${params}`);
+  },
 
   // Settings
   getSettings: () => get<AppSettings>(`${BASE}/settings`),

@@ -43,6 +43,33 @@ export const scaffoldSchema = z.object({
   publishDir: z.string().describe('The build output directory served by Netlify, e.g. "dist" or "build"'),
 });
 
+export const promptPolicySchema = z.object({
+  projectOverview: z
+    .string()
+    .describe('2-3 sentence project context for any AI coding assistant working on this project'),
+  techConventions: z
+    .string()
+    .describe('Specific tech stack conventions: frameworks, versions, and their idiomatic usage patterns'),
+  codeStyleRules: z
+    .array(z.string())
+    .describe('5-10 specific, actionable code style rules'),
+  architectureRules: z
+    .array(z.string())
+    .describe('3-7 architecture rules: file organization, module boundaries, import conventions'),
+  dos: z
+    .array(z.string())
+    .describe('5-10 positive patterns the AI should always follow'),
+  donts: z
+    .array(z.string())
+    .describe('5-10 anti-patterns the AI must never use'),
+  testingGuidelines: z
+    .string()
+    .describe('Testing framework, patterns, and coverage expectations'),
+  dependenciesPolicy: z
+    .string()
+    .describe('Approved dependencies and restrictions on adding new ones'),
+});
+
 export const deployConfigSchema = z.object({
   netlifyToml: z.string().describe('Contents of netlify.toml'),
   envVars: z.array(

@@ -97,6 +97,39 @@ export async function getAuthenticatedUser(): Promise<string> {
   return data.login;
 }
 
+export async function getRepoTree(repoFullName: string): Promise<string[]> {
+  const octokit = await getOctokit();
+  const [owner, repo] = repoFullName.split('/');
+
+  const { data } = await octokit.git.getTree({
+    owner,
+    repo,
+    tree_sha: 'main',
+    recursive: 'true',
+  });
+
+  return data.tree
+    .filter((item) => item.type === 'blob' && item.path)
+    .map((item) => item.path!);
+}
+
+export async function getFileContent(repoFullName: string, filePath: string): Promise<string> {
+  const octokit = await getOctokit();
+  const [owner, repo] = repoFullName.split('/');
+
+  const { data } = await octokit.repos.getContent({
+    owner,
+    repo,
+    path: filePath,
+  });
+
+  if ('content' in data && data.encoding === 'base64') {
+    return Buffer.from(data.content, 'base64').toString('utf-8');
+  }
+
+  throw new Error(`Cannot read file: ${filePath}`);
+}
+
 export async function addDeployKey(
   repoFullName: string,
   title: string,
